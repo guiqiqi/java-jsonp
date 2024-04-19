@@ -1,17 +1,10 @@
 package jsonp;
 
-import java.util.List;
-
-import jsonp.automata.NFA;
-import jsonp.regex.Term;
+import jsonp.decoder.Decoder;
 
 public class App {
     public static void main(String[] args) {
-        Term term = Term.concat(List.of(
-            Term.string("\""),
-            Term.repeat(Term.Any),
-            Term.string("\"")
-        ));
-        NFA nfa = NFA.build(term);
+        Decoder decoder = new Decoder();
+        System.out.println(decoder.lexer.nfa.draw());
     }
 }

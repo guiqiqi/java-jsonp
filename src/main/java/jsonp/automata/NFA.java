@@ -10,28 +10,17 @@ import java.util.stream.Stream;
 
 import jsonp.regex.*;
 
-/**
- * Transition record contains source state and destination state and matcher between them.
- */
-class TransitionRecord {
-    public final NFAState from;
-    public final NFAState to;
-    public final TransitionableTerm matcher;
-
-    public TransitionRecord(NFAState from, NFAState to, TransitionableTerm matcher) {
-        this.from = from;
-        this.to = to;
-        this.matcher = matcher;
-    }
-}
-
 public class NFA {
     public final NFAState enter;
     public final Set<NFAState> states;
     public final Set<CharTerm> alphabet;
     public final List<TransitionRecord> table;
 
-    NFA(NFAState enter, Set<NFAState> states, Set<CharTerm> alphabet, List<TransitionRecord> table) {
+    public NFA(
+            NFAState enter,
+            Set<NFAState> states,
+            Set<CharTerm> alphabet,
+            List<TransitionRecord> table) {
         this.table = table;
         this.alphabet = alphabet;
         this.states = states;

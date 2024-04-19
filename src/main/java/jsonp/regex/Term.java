@@ -5,15 +5,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class Term {
-    public boolean grouped = false;
-    public String tag = null;
+    public Boolean grouped = false;
+    public String label = null;
 
     /*
      * Set current term as a grouped regex term.
      */
     public Term group(String tag) {
         this.grouped = true;
-        this.tag = tag;
+        this.label = tag;
         return this;
     }
 
@@ -139,7 +139,7 @@ public class Term {
     private static final String lowerLetterForm = "abcdefghijklmnopqrstuvwxyz";
 
     // Useful terms
-    public static final Term Epsilon = new EpsilonTerm();
+    public static final EpsilonTerm Epsilon = new EpsilonTerm();
     public static final Term Digits = srange(digitForm, "[0-9]");
     public static final Term Letters = srange(upperLetterForm + lowerLetterForm, "[a-zA-Z]");
     public static final Term Any = srange(digitForm + punctuationForm + upperLetterForm + lowerLetterForm, ".");

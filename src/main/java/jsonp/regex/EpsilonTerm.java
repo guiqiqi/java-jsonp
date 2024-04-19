@@ -1,10 +1,14 @@
 package jsonp.regex;
 
-import java.util.HashSet;
-import java.util.Set;
+public class EpsilonTerm extends Term implements TransitionableTerm {
 
-public class EpsilonTerm extends Term {
-    public final static Set<Character> accept = new HashSet<>();
+    /**
+     * Epsilon term should not accept any char so make it as a empty set.
+     */
+    @Override
+    public Boolean accept(Character c) {
+        return false;
+    }
 
     @Override
     public String toString() {

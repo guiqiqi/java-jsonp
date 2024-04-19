@@ -186,4 +186,86 @@ public class NFA {
         NFAState exit = new NFAState();
         return build(term, enter, exit);
     }
+
+    /**
+     * Get all epsilon transition reachable states from current state set.
+     * @param currentStates contains all current states
+     * @return all reachable states from current states with epsilon transition
+     */
+    public Set<NFAState> reachable(Set<NFAState> currentStates) {
+        return this.table.stream()
+                .filter((record) -> {
+                    return currentStates.contains(record.from) &&
+                            record.matcher instanceof EpsilonTerm;
+                })
+                .map(record -> record.to)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Get all char term transition reachble states from current state set.
+     * @param currentStates contains all current states
+     * @param matcher is target char term
+     * @return all reachable states from current states with char term transition
+     */
+    public Set<NFAState> reachable(Set<NFAState> currentStates, CharTerm matcher) {
+        return this.table.stream()
+                .filter((record) -> {
+                    return currentStates.contains(record.from) &&
+                            record.matcher == matcher;
+                })
+                .map(record -> record.to)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Get all char term transition reachble states from current state set.
+     * @param currentStates contains all current states
+     * @param matcher is target char term
+     * @return all reachable states from current states with char term transition
+     */
+    public Set<NFAState> reachable(Set<NFAState> currentStates, Character matcher) {
+        return this.table.stream()
+                .filter((record) -> {
+                    return currentStates.contains(record.from) &&
+                            record.matcher.accept(matcher);
+                })
+                .map(record -> record.to)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Get epsilon closure for current state set.
+     * 
+     * Using BFS for searching epsilon-closure of a set of state.
+     * 
+     * @param currentStates contains all current states
+     * @return current states epsilon closure
+     */
+    public Set<NFAState> epsilonClosure(Set<NFAState> currentStates) {
+        Set<NFAState> visited = new HashSet<>();
+        List<Set<NFAState>> unvisited = new ArrayList<>();
+        unvisited.add(states);
+        while (!unvisited.isEmpty()) {
+            Set<NFAState> currentClosure = unvisited.removeLast();
+            visited.addAll(currentClosure);
+            Set<NFAState> reachableStatesFromCurrentClosure = this.reachable(currentClosure);
+            reachableStatesFromCurrentClosure.removeAll(visited);
+            if (!reachableStatesFromCurrentClosure.isEmpty())
+                unvisited.add(reachableStatesFromCurrentClosure);
+        }
+        return visited;
+    }
+
+    /**
+     * Get all final states set.
+     * @return all final states
+     */
+    public Set<NFAState> finalStates() {
+        Set<NFAState> finals = new HashSet<>();
+        for (NFAState state : this.states)
+            if (state.isFinal)
+                finals.add(state);
+        return finals;
+    }
 }

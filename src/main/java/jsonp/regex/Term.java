@@ -23,7 +23,7 @@ public class Term {
     public static Term concat(List<Term> terms) {
         if (terms.size() == 1)
             return terms.get(0);
-        return new ConcatTerm(terms.get(0), concat(terms.subList(1, terms.size() - 2)));
+        return new ConcatTerm(terms.get(0), concat(terms.subList(1, terms.size() - 1)));
     }
 
     /**
@@ -35,7 +35,7 @@ public class Term {
     public static Term alter(List<Term> terms) {
         if (terms.size() == 1)
             return terms.get(0);
-        return new AlterTerm(terms.get(0), alter(terms.subList(1, terms.size() - 2)));
+        return new AlterTerm(terms.get(0), alter(terms.subList(1, terms.size() - 1)));
     }
 
     /**
@@ -134,7 +134,7 @@ public class Term {
     }
 
     private static final String digitForm = "0123456789";
-    private static final String punctuationForm = "!@#$%^&*()_+-= ";
+    private static final String punctuationForm = "!@#$%^&*()_+-= '";
     private static final String upperLetterForm = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String lowerLetterForm = "abcdefghijklmnopqrstuvwxyz";
 

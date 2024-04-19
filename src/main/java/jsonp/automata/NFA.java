@@ -1,6 +1,9 @@
 package jsonp.automata;
 
 import java.util.Set;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -98,7 +101,8 @@ public class NFA {
                 NFAState enterE2 = new NFAState();
                 NFA e1 = build(matcher.tl, enter, exitE1);
                 NFA e2 = build(matcher.tr, enterE2, exit);
-                List<TransitionRecord> table = Stream.concat(e1.table.stream(), e2.table.stream()).toList();
+                List<TransitionRecord> table = Stream.concat(e1.table.stream(), e2.table.stream())
+                        .collect(Collectors.toList());
                 table.add(new TransitionRecord(exitE1, enterE2, Term.Epsilon));
                 Set<NFAState> states = Stream.concat(e1.states.stream(), e2.states.stream())
                         .collect(Collectors.toSet());
@@ -113,7 +117,8 @@ public class NFA {
                 NFAState exitE2 = new NFAState();
                 NFA e1 = build(matcher.tl, enterE1, exitE1);
                 NFA e2 = build(matcher.tr, enterE2, exitE2);
-                List<TransitionRecord> table = Stream.concat(e1.table.stream(), e2.table.stream()).toList();
+                List<TransitionRecord> table = Stream.concat(e1.table.stream(), e2.table.stream())
+                        .collect(Collectors.toList());
                 table.add(new TransitionRecord(enter, enterE1, Term.Epsilon));
                 table.add(new TransitionRecord(enter, enterE2, Term.Epsilon));
                 table.add(new TransitionRecord(exitE1, exit, Term.Epsilon));
@@ -130,12 +135,12 @@ public class NFA {
                 NFAState enterE1 = new NFAState();
                 NFAState exitE1 = new NFAState();
                 NFA e1 = build(matcher.t, enterE1, exitE1);
-                List<TransitionRecord> table = List.copyOf(e1.table);
+                List<TransitionRecord> table = new ArrayList<>(e1.table);
                 table.add(new TransitionRecord(enter, enterE1, Term.Epsilon));
                 table.add(new TransitionRecord(enter, exit, Term.Epsilon));
                 table.add(new TransitionRecord(exitE1, enterE1, Term.Epsilon));
                 table.add(new TransitionRecord(exitE1, exit, Term.Epsilon));
-                Set<NFAState> states = Set.copyOf(e1.states);
+                Set<NFAState> states = new HashSet<>(e1.states);
                 states.add(enter);
                 states.add(exit);
                 Set<CharTerm> alphabet = Set.copyOf(e1.alphabet);
@@ -144,10 +149,10 @@ public class NFA {
 
             // Extended RepeatTerm, see `regex.Term.repeat`
             case RepeatTerm matcher: {
-                List<NFAState> chain = List.of(enter);
-                Set<NFAState> states = Set.of(exit);
-                Set<CharTerm> alphabet = Set.of();
-                List<TransitionRecord> table = List.of();
+                List<NFAState> chain = Arrays.asList(enter);
+                Set<NFAState> states = new HashSet<>(Arrays.asList(exit));
+                Set<CharTerm> alphabet = new HashSet<>();
+                List<TransitionRecord> table = new ArrayList<>();
 
                 // Build states and merge NFAs
                 for (Integer index = 0; index < matcher.m; index++) {

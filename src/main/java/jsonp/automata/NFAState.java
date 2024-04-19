@@ -20,6 +20,13 @@ public class NFAState {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NFAState)
+            return ((NFAState) obj).index == this.index;
+        return false;
+    }
+
+    @Override
     public int hashCode() {
         return Integer.hashCode(this.index);
     }

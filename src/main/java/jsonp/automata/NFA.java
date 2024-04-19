@@ -87,14 +87,14 @@ public class NFA {
             case EpsilonTerm matcher:
                 return new NFA(
                         enter,
-                        Set.of(enter, exit),
-                        Set.of(),
+                        new HashSet<>(Arrays.asList(enter, exit)),
+                        new HashSet<>(),
                         List.of(new TransitionRecord(enter, exit, matcher)));
             case CharTerm matcher:
                 return new NFA(
                         enter,
-                        Set.of(enter, exit),
-                        Set.of(matcher),
+                        new HashSet<>(Arrays.asList(enter, exit)),
+                        new HashSet<>(Arrays.asList(matcher)),
                         List.of(new TransitionRecord(enter, exit, matcher)));
             case ConcatTerm matcher: {
                 NFAState exitE1 = new NFAState();
@@ -105,9 +105,9 @@ public class NFA {
                         .collect(Collectors.toList());
                 table.add(new TransitionRecord(exitE1, enterE2, Term.Epsilon));
                 Set<NFAState> states = Stream.concat(e1.states.stream(), e2.states.stream())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(HashSet::new));
                 Set<CharTerm> alphabet = Stream.concat(e1.alphabet.stream(), e2.alphabet.stream())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(HashSet::new));
                 return new NFA(enter, states, alphabet, table);
             }
             case AlterTerm matcher: {
@@ -124,11 +124,11 @@ public class NFA {
                 table.add(new TransitionRecord(exitE1, exit, Term.Epsilon));
                 table.add(new TransitionRecord(exitE2, exit, Term.Epsilon));
                 Set<NFAState> states = Stream.concat(e1.states.stream(), e2.states.stream())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(HashSet::new));
                 states.add(enter);
                 states.add(exit);
                 Set<CharTerm> alphabet = Stream.concat(e1.alphabet.stream(), e2.alphabet.stream())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(HashSet::new));
                 return new NFA(enter, states, alphabet, table);
             }
             case KleeneTerm matcher: {
@@ -166,7 +166,7 @@ public class NFA {
                 }
 
                 // Add connection for last n states to exit states
-                for (NFAState state : chain.subList(matcher.n, chain.size() - 1)) {
+                for (NFAState state : chain.subList(matcher.n, chain.size())) {
                     table.add(new TransitionRecord(state, exit, Term.Epsilon));
                 }
                 return new NFA(enter, states, alphabet, table);
@@ -199,7 +199,7 @@ public class NFA {
                             record.matcher instanceof EpsilonTerm;
                 })
                 .map(record -> record.to)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     /**
@@ -215,7 +215,7 @@ public class NFA {
                             record.matcher == matcher;
                 })
                 .map(record -> record.to)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     /**
@@ -231,7 +231,7 @@ public class NFA {
                             record.matcher.accept(matcher);
                 })
                 .map(record -> record.to)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     /**
@@ -267,5 +267,54 @@ public class NFA {
             if (state.isFinal)
                 finals.add(state);
         return finals;
+    }
+
+    /**
+     * Build some iterable things to string.
+     * @param <T> Type parameter for Iterable<T> generics
+     * @param delimeter used for combining string
+     * @param sequence of elements
+     * @return combind string
+     */
+    private <T> String join(String delimeter, Iterable<T> sequence) {
+        StringBuilder builder = new StringBuilder();
+        Integer index = 0;
+        for (T element : sequence) {
+            if (index != 0)
+                builder.append(delimeter);
+            builder.append(element);
+            index++;
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Draw current NFA.
+     * @return NFA string for drawing online
+     */
+    public String draw() {
+        String formatter = String.join("\n%s\n",
+                "#states",
+                "#initial",
+                "#accepting",
+                "#alphabet",
+                "#transitions\n%s");
+        StringBuilder transitions = new StringBuilder();
+        for (TransitionRecord record : this.table) {
+            String name;
+            if (record.matcher instanceof EpsilonTerm)
+                name = "$";
+            else
+                name = record.matcher.toString();
+            transitions.append(String.format("%s:%s>%s", record.from, name, record.to));
+            transitions.append("\n");
+        }
+        return String.format(
+                formatter,
+                this.join("\n", this.states),
+                this.enter,
+                this.join("\n", this.finalStates()),
+                this.join("\n", this.alphabet),
+                transitions);
     }
 }

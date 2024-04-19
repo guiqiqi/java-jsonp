@@ -28,6 +28,18 @@ public class CharTerm extends Term implements TransitionableTerm {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CharTerm)
+            return this.form.equals(((CharTerm) obj).form);
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
+
+    @Override
     public String toString() {
         return this.name;
     }

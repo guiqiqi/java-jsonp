@@ -234,7 +234,7 @@ public class NFA {
     public Set<NFAState> epsilonClosure(Set<NFAState> currentStates) {
         Set<NFAState> visited = new HashSet<>();
         List<Set<NFAState>> unvisited = new ArrayList<>();
-        unvisited.add(states);
+        unvisited.add(currentStates);
         while (!unvisited.isEmpty()) {
             Set<NFAState> currentClosure = unvisited.removeLast();
             visited.addAll(currentClosure);

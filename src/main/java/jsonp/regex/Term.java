@@ -134,7 +134,7 @@ public class Term {
     }
 
     private static final String digitForm = "0123456789";
-    private static final String punctuationForm = "!@#$%^&*()_+-= \\'";
+    private static final String punctuationForm = "!#$%&'()*+,-./:;<=>?@[]^_`{|}~ ";
     private static final String upperLetterForm = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String lowerLetterForm = "abcdefghijklmnopqrstuvwxyz";
 

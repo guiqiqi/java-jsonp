@@ -94,7 +94,7 @@ public class Lexer {
         // If we could NOT reach any state from current closure - means we need to check returning
         if (nextStepStates.isEmpty()) {
             if (reachedFinalStates.isEmpty())
-                throw new InvalidToken(String.format("invalid token %c", this.buffer.getLast()));
+                throw new InvalidToken(String.format("invalid token %c", c));
 
             Token record = new Token(this.buffer, reachedFinalStates.getFirst().label);
             this.buffer.clear();

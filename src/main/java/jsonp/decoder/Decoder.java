@@ -1,5 +1,6 @@
 package jsonp.decoder;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import jsonp.regex.Term;
@@ -30,6 +31,7 @@ public class Decoder {
                         Term.plus(Term.Digits))))))
                 .group("number");
         Term Space = Term.srange(" \t\r\n", "Space").group("space");
+        Term Colon = Term.string(":").group(":");
         Term Comma = Term.string(",").group(",");
         Term CurlyLeft = Term.string("{").group("{");
         Term CurlyRight = Term.string("}").group("}");
@@ -37,6 +39,18 @@ public class Decoder {
         Term SquareRight = Term.string("]").group("]");
         this.lexer = new Lexer(List.of(
                 True, False, Null, String, Number,
-                Space, Comma, CurlyLeft, CurlyRight, SquareLeft, SquareRight));
+                Space, Comma, Colon, CurlyLeft, CurlyRight, SquareLeft, SquareRight));
+    }
+
+    public List<Token> tokenize(String jsonText) {
+        List<Token> records = new LinkedList<>();
+        for (Character c : jsonText.toCharArray()) {
+            Token record = this.lexer.read(c);
+            if (!record.nothing)
+                records.add(record);
+        }
+        Token record = this.lexer.read();
+        records.add(record);
+        return records;
     }
 }

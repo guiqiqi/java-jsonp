@@ -62,4 +62,62 @@ public class Lexer {
         this.curretState.clear();
         this.curretState.add(this.enter);
     }
+
+    /**
+     * Move current state set driven by input char.
+     * 
+     * For each iteration of content given a char:
+     *     0. current state set equals epsilon-closure of current state: T = epsilon-closure(state)
+     *     1. enumerate all states which reachble from current state set T with given char: M = move(T, x)
+     *     2. current state set updates to epsilon-closure of M: T = epsilon-closure(M)
+     * 
+     * While calculated M as empty set, means no transition allowed from current state with given char, then:
+     *     0. if current closure contains a final state, means we get an output
+     *     1. if current closure without a final state, raise a LexerError.
+     * 
+     * If char not given in, try to yield current buffer.
+     * 
+     * If multiple final states matched, we select the one with smallest index, 
+     * which means the rule have higher priority.
+     * 
+     * @param c represents char reading in
+     * @return lexer record contains tag and joint buffer
+     */
+    public Token read(Character c) {
+        Set<NFAState> currentStateClosure = this.nfa.epsilonClosure(this.curretState);
+        List<NFAState> reachedFinalStates = currentStateClosure.stream()
+                .filter(state -> state.isFinal)
+                .sorted((stateA, stateB) -> stateA.index.compareTo(stateB.index))
+                .toList();
+        Set<NFAState> nextStepStates = this.nfa.reachable(currentStateClosure, c);
+
+        // If we could NOT reach any state from current closure - means we need to check returning
+        if (nextStepStates.isEmpty()) {
+            if (reachedFinalStates.isEmpty())
+                throw new InvalidToken(String.format("invalid token %c", this.buffer.getLast()));
+
+            Token record = new Token(this.buffer, reachedFinalStates.getFirst().label);
+            this.buffer.clear();
+            this.buffer.add(c);
+            this.curretState = this.nfa.reachable(this.nfa.epsilonClosure(Set.of(this.enter)), c);
+            return record;
+        }
+
+        // Otherwise we need to move to nextstep's epsilon-closure and return nothing
+        this.curretState = this.nfa.epsilonClosure(nextStepStates);
+        this.buffer.add(c);
+        return new Token();
+    }
+
+    public Token read() {
+        Set<NFAState> currentStateClosure = this.nfa.epsilonClosure(this.curretState);
+        List<NFAState> reachedFinalStates = currentStateClosure.stream()
+                .filter(state -> state.isFinal)
+                .sorted((stateA, stateB) -> stateA.index.compareTo(stateB.index))
+                .toList();
+        Token record = new Token(this.buffer, reachedFinalStates.getFirst().label);
+        if (reachedFinalStates.isEmpty())
+            throw new InvalidToken(String.format("invalid token %s", record.content));
+        return record;
+    }
 }

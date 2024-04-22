@@ -30,7 +30,7 @@ public class Decoder {
                         Term.optional(Term.srange("+-", "[+-]")),
                         Term.plus(Term.Digits))))))
                 .group("number");
-        Term Space = Term.srange(" \t\r\n", "Space").group("space");
+        Term Space = Term.repeat(Term.srange(" \t\r\n", "Space")).group("space");
         Term Colon = Term.string(":").group(":");
         Term Comma = Term.string(",").group(",");
         Term CurlyLeft = Term.string("{").group("{");
@@ -52,5 +52,10 @@ public class Decoder {
         Token record = this.lexer.read();
         records.add(record);
         return records;
+    }
+
+    public Object decode(String jsonText) {
+        Parser parser = new Parser(this.tokenize(jsonText));
+        return parser.parse();
     }
 }

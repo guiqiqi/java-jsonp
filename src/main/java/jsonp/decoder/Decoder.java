@@ -51,10 +51,11 @@ public class Decoder {
         }
         Token record = this.lexer.read();
         records.add(record);
+        this.lexer.reset();
         return records;
     }
 
-    public Object decode(String jsonText) {
+    public JsonObject decode(String jsonText) {
         Parser parser = new Parser(this.tokenize(jsonText));
         return parser.parse();
     }

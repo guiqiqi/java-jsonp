@@ -107,7 +107,7 @@ public class JsonObject {
             List<JsonObject> converted = this.as();
             for (JsonObject element : converted) {
                 builder.append(element.toString());
-                if (index++ < converted.size())
+                if (index++ < converted.size() - 1)
                     builder.append(", ");
             }
             builder.append("]");

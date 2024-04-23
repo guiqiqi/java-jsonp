@@ -15,7 +15,7 @@ public class App {
         String encoded = Encoder.encode(data);
         Decoder decoder = new Decoder();
         System.out.println("Encoded: " + encoded);
-        List<JsonObject> decoded = decoder.decode(encoded).as();
+        JsonObject decoded = decoder.decode(encoded);
         System.out.println("Decoded: " + decoded);
     }
 }
